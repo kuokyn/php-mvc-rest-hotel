@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+
+  apache:
+    build: .
+    container_name: application
+    volumes:
+      - ./application:/var/www/html
+      - ./config/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+    depends_on:
+      - mysql
+
+  web:
+    image: nginx
+    container_name: web-server
+    ports:
+      - 80:80
+    working_dir: /var/www/html
+    volumes:
+      - ./application:/var/www/html
+      - ./config/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - apache
+
+  mysql:
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
+    image: mysql
+    hostname: mysql
+    restart: always
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
