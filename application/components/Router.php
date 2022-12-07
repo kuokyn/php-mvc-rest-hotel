@@ -13,7 +13,23 @@ class Router {
         $entity = explode('&', array_shift($segments));
         $controller = null;
         switch ($entity[0]) {
+            case 'registration': // для пользователей
+                include_once (ROOT . '/controller/UsersController.php');
+                $controller= new UsersController();
+                break;
+            case 'login': // для пользователей
+                include_once (ROOT . '/controller/UsersController.php');
+                $controller= new UsersController();
+                break;
+            case 'logout': // для пользователей
+                include_once (ROOT . '/logout.php');
+                $controller= new UsersController();
+                break;
             case 'bookings':
+                include_once (ROOT . '/controller/BookingsController.php');
+                $controller= new BookingsController();
+                break;
+            case 'mybookings':
                 include_once (ROOT . '/controller/BookingsController.php');
                 $controller= new BookingsController();
                 break;

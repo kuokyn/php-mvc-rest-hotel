@@ -19,7 +19,7 @@ class UsersController
 
             case 'POST':
                 $data = (array)json_decode(file_get_contents("php://input"), true);
-                if (isset($data["phone"]) && isset($data["name"]) && isset($data["surname"]) && isset($data["password"]) && isset($data["email"])) {
+                if ($data["action"] == "create" && isset($data["phone"]) && isset($data["name"]) && isset($data["surname"]) && isset($data["password"]) && isset($data["email"])) {
                     $user = $this->createUser($data);
                     if ($user) {
                         http_response_code(201);
@@ -33,7 +33,10 @@ class UsersController
                             "message" => "User was NOT created because of database error"
                         ]);
                     }
-                } else {
+                } else if ($data["action"] == "login" && isset($data["phone"]) && isset($data["password"])) {
+                    $this->loginUser($data["phone"],$data["password"]);
+                }
+                else {
                     echo json_encode([
                         "message" => "User was NOT created because not enough parameters"
                     ]);
@@ -116,6 +119,22 @@ class UsersController
         } else {
             echo json_encode([
                 "message" => "User with phone $phone was deleted"
+            ]);
+        }
+    }
+
+    public function loginUser($login, $password) {
+        $user = User::getUserByPhone($login);
+        if ($user['password']== $password) {
+            $_SESSION["loggedIn"] = TRUE;
+            $_SESSION["login"] = $login;
+            echo json_encode([
+                "message" => "You are logged in",
+                "session login" => $_SESSION["login"]
+            ]);
+        } else {
+            echo json_encode([
+                "message" => "Invalid username or password"
             ]);
         }
     }

@@ -1,4 +1,5 @@
 <?php
+session_start();
 require('model/database.php');
 require('components/Router.php');
 

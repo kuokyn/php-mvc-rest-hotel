@@ -1,6 +1,7 @@
 <?php
 
 include_once(ROOT . '/model/Booking.php');
+include_once(ROOT . '/model/User.php');
 
 class BookingsController
 {
@@ -11,8 +12,11 @@ class BookingsController
         $isSet = isset($data["people"]) && isset($data["check_in_date"]) && isset($data["check_out_date"]) && isset($data["user_id"]) && isset($data["room_id"]);
         switch ($_SERVER["REQUEST_METHOD"]) {
             case 'GET':
-                if (!isset($_GET["id"])) {
+                if (!isset($_GET["id"]) && !isset($_SESSION["login"])) {
                     $result = Booking::getBookingList();
+                }
+                else if (isset($_SESSION["login"])) {
+                    $result = $this->getMyBookings($_SESSION["login"]);
                 }
                 else {
                     $result = Booking::getBookingById($_GET["id"]);
@@ -119,5 +123,10 @@ class BookingsController
         $room_id= $data["room_id"];
         $user_id = $data["user_id"];
         return Booking::updateBooking($id, $room_id, $user_id, $check_in_date, $check_out_date, $people);
+    }
+
+    public function getMyBookings($login) {
+        $user = User::getUserByPhone($login);
+        return Booking::getBookingsByUserId($user["id"]);
     }
 }

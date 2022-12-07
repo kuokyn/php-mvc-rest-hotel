@@ -11,6 +11,14 @@ class Booking
         return $result->fetch_array(MYSQLI_ASSOC);
     }
 
+    static function getBookingsByUserId($id)
+    {
+        global $db;
+        $query = "SELECT * FROM booking WHERE user_id='" . $id . "'";
+        $result = mysqli_query($db, $query);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
     static function createBooking($room_id, $user_id, $check_in_date, $check_out_date, $people)
     {
         global $db;
